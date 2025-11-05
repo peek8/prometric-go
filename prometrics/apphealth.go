@@ -5,10 +5,12 @@
  * Author: Md. Asraful Haque
  *
  */
- 
+
 package prometrics
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"runtime"
 	"time"
@@ -30,6 +32,26 @@ func updateHealthMetrics() {
 	MemoryAlloc.WithLabelValues().Set(float64(mem.Alloc))
 	Goroutines.WithLabelValues().Set(float64(runtime.NumGoroutine()))
 	GCCount.WithLabelValues().Add(float64(mem.NumGC))
+}
+
+// CollectSystemMetricsLoop function collects system health information eg cpu, memory in some interval time ie intervalSecs.
+// It should be called in a go routine, eg. if we want to collect metrics in 10 seconds interval, it should be called as follows:
+// ctx, cancel := context.WithCancel(context.Background(), 10)
+// go collectSystemMetricsLoop(ctx)
+// It can be cancelled any time by calling `cancel()`
+func CollectSystemMetricsLoop(ctx context.Context, intervalSecs int) {
+	ticker := time.NewTicker(time.Duration(intervalSecs) * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			updateHealthMetrics()
+		case <-ctx.Done():
+			fmt.Println("Metrics loop stopped gracefully")
+			return
+		}
+	}
 }
 
 // HealthMiddleware for net/http

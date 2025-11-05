@@ -14,11 +14,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-type CurriableVec interface {
-	prometheus.Collector
-	MustCurryWith(labels prometheus.Labels) prometheus.Collector
-}
-
 type HTTPMetricName string
 
 const (
@@ -33,13 +28,13 @@ var (
 	HttpRequestsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: string(HttpRequestsTotalMetric),
 		Help: "Total number of HTTP requests processed, labeled by status code and method.",
-	}, []string{"handler", "method", "code"})
+	}, []string{"path", "method", "code"})
 
 	HttpRequestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name:    string(HttpRequestDurationMetric),
 		Help:    "Histogram of HTTP request durations in seconds.",
 		Buckets: prometheus.DefBuckets,
-	}, []string{"handler", "method", "code"})
+	}, []string{"path", "method", "code"})
 
 	HttpRequestsInFlight = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: string(HttpRequestsInFlightMetric),
@@ -50,11 +45,11 @@ var (
 		Name:    string(HttpRequestSizeMetric),
 		Help:    "Size of incoming HTTP requests in bytes.",
 		Buckets: prometheus.ExponentialBuckets(100, 10, 5),
-	}, []string{"handler", "method", "code"})
+	}, []string{"path", "method"})
 
 	HttpResponseSize = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name:    string(HttpResponseSizeMetric),
 		Help:    "Size of outgoing HTTP responses in bytes.",
 		Buckets: prometheus.ExponentialBuckets(100, 10, 5),
-	}, []string{"handler", "method", "code"})
+	}, []string{"path", "method", "code"})
 )

@@ -13,9 +13,7 @@ func GinMiddleware() gin.HandlerFunc {
 		HttpRequestsInFlight.Inc()
 		defer HttpRequestsInFlight.Dec()
 
-		if c.Request.ContentLength > 0 {
-			HttpRequestSize.WithLabelValues(c.FullPath(), c.Request.Method).Observe(float64(c.Request.ContentLength))
-		}
+		reqLength := c.Request.ContentLength
 
 		c.Next()
 
@@ -26,9 +24,13 @@ func GinMiddleware() gin.HandlerFunc {
 			handler = "unknown"
 		}
 
+		if reqLength > 0 {
+			HttpRequestSize.WithLabelValues(handler, c.Request.Method, status).Observe(float64(reqLength))
+		}
+
 		HttpRequestsTotal.WithLabelValues(handler, c.Request.Method, status).Inc()
-		HttpRequestDuration.WithLabelValues(handler, c.Request.Method).Observe(duration)
-		HttpResponseSize.WithLabelValues(handler, c.Request.Method).Observe(float64(c.Writer.Size()))
+		HttpRequestDuration.WithLabelValues(handler, c.Request.Method, status).Observe(duration)
+		HttpResponseSize.WithLabelValues(handler, c.Request.Method, status).Observe(float64(c.Writer.Size()))
 	}
 }
 
