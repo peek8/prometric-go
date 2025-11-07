@@ -35,9 +35,14 @@ func updateHealthMetrics() {
 }
 
 // CollectSystemMetricsLoop function collects system health information eg cpu, memory in some interval time ie intervalSecs.
-// It should be called in a go routine, eg. if we want to collect metrics in 10 seconds interval, it should be called as follows:
-// ctx, cancel := context.WithCancel(context.Background(), 10)
-// go collectSystemMetricsLoop(ctx)
+// It should be called in a go routine
+//
+// Example:
+// if we want to collect metrics in 10 seconds interval, it should be called as follows:
+//
+//	ctx, cancel := context.WithCancel(context.Background(), 10)
+//	go collectSystemMetricsLoop(ctx)
+//
 // It can be cancelled any time by calling `cancel()`
 func CollectSystemMetricsLoop(ctx context.Context, intervalSecs int) {
 	ticker := time.NewTicker(time.Duration(intervalSecs) * time.Second)
@@ -54,7 +59,14 @@ func CollectSystemMetricsLoop(ctx context.Context, intervalSecs int) {
 	}
 }
 
-// HealthMiddleware for net/http
+// HealthMiddleware instruments an http.Handler with Prometheus metrics.
+// It records application health related metrics such as app uptim, memory allocated, current go routies and total garbage collectors.
+//
+// Example:
+//
+//	http.Handle("/metrics",
+//	    prometrics.HealthMiddleware(promhttp.Handler()),
+//	)
 func HealthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		updateHealthMetrics()

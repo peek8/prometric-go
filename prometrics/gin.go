@@ -10,8 +10,10 @@ import (
 func GinMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
-		HttpRequestsInFlight.Inc()
-		defer HttpRequestsInFlight.Dec()
+		handler := c.FullPath()
+
+		HttpRequestsInFlight.WithLabelValues(handler).Inc()
+		defer HttpRequestsInFlight.WithLabelValues(handler).Dec()
 
 		reqLength := c.Request.ContentLength
 
@@ -19,7 +21,7 @@ func GinMiddleware() gin.HandlerFunc {
 
 		status := strconv.Itoa(c.Writer.Status())
 		duration := time.Since(start).Seconds()
-		handler := c.FullPath()
+
 		if handler == "" {
 			handler = "unknown"
 		}

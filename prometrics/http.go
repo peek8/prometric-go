@@ -25,9 +25,19 @@ import (
 // 	HttpMetricHandlers []HttpMetricHandler
 // )
 
-// InstrumentHttpHandler automatically instruments any http.Handler
+// InstrumentHttpHandler instruments an http.Handler with Prometheus metrics.
+//
+// It records total requests, request duration, in-flight requests, request size and response size.
+// The "handler" label is set from the given handlerName parameter.
+// The returned handler can be used directly in an http.ServeMux.
+//
+// Example:
+//
+//	http.Handle("/api",
+//	    prometrics.InstrumentHttpHandler("api", myHandler),
+//	)
 func InstrumentHttpHandler(handlerName string, next http.Handler) http.Handler {
-	h := promhttp.InstrumentHandlerInFlight(HttpRequestsInFlight,
+	h := promhttp.InstrumentHandlerInFlight(HttpRequestsInFlight.WithLabelValues(handlerName),
 		promhttp.InstrumentHandlerDuration(
 			HttpRequestDuration.MustCurryWith(handlerLabel(handlerName)),
 			promhttp.InstrumentHandlerCounter(

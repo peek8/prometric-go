@@ -10,8 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
+	"github.com/peek8/prometric-go/prometrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"peek8.io/prometric-go/prometrics"
 )
 
 type Person struct {
@@ -73,7 +73,8 @@ func httpApi() {
 	r.Handle("/persons", prometrics.InstrumentHttpHandler("/persons", http.HandlerFunc(getPersons))).Methods("GET")
 
 	// expose metrics endpoint
-	r.Handle("/metrics", promhttp.Handler())
+	// r.Handle("/metrics", promhttp.Handler())
+	r.Handle("/metrics", prometrics.HealthMiddleware(promhttp.Handler()))
 
 	fmt.Println("Server listening on :7080")
 	serverAddr := "0.0.0.0:7080"

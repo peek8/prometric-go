@@ -1,4 +1,4 @@
-module peek8.io/prometric-go
+module github.com/peek8/prometric-go
 
 go 1.25.0
 

@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 // type MetricDefinition struct {
@@ -18,6 +19,9 @@ import (
 // 	Metrics []MetricDefinition `yaml:"metrics"`
 // }
 
+// MetricFactory provides a flexible API to create dynamic Prometheus metrics
+// such as counters, gauges, and histograms at runtime. Useful for tracking
+// domain-specific data (e.g., number of stored objects or queue size).
 type MetricFactory struct {
 	mu         sync.Mutex
 	counters   map[string]*prometheus.CounterVec
@@ -31,30 +35,46 @@ var factory = &MetricFactory{
 	histograms: make(map[string]*prometheus.HistogramVec),
 }
 
+// CreateCounter registers a new Counter metric of type *prometheus.CounterVec and returns it.
+//
+// Example:
+//
+//	counter := CreateCounter("crud_operations_total", "Total CRUD operations", []string{"object", "operation"})
+//	CrudOperationTotal.WithLabelValues("person", "create").Inc()
 func CreateCounter(name, help string, labels []string) *prometheus.CounterVec {
 	factory.mu.Lock()
 	defer factory.mu.Unlock()
 	if c, ok := factory.counters[name]; ok {
 		return c
 	}
-	c := prometheus.NewCounterVec(prometheus.CounterOpts{Name: name, Help: help}, labels)
-	prometheus.MustRegister(c)
+	c := promauto.NewCounterVec(prometheus.CounterOpts{Name: name, Help: help}, labels)
 	factory.counters[name] = c
 	return c
 }
 
+// CreateGauge registers a new Gauge metric of type *prometheus.GaugeVec and returns it.
+//
+// Example:
+//
+//	g := CreateGauge("object_count", "Current number of objects", []string{"object"})
+//	g.WithLabelValues("person").Set(55)
 func CreateGauge(name, help string, labels []string) *prometheus.GaugeVec {
 	factory.mu.Lock()
 	defer factory.mu.Unlock()
 	if g, ok := factory.gauges[name]; ok {
 		return g
 	}
-	g := prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: name, Help: help}, labels)
-	prometheus.MustRegister(g)
+	g := promauto.NewGaugeVec(prometheus.GaugeOpts{Name: name, Help: help}, labels)
 	factory.gauges[name] = g
 	return g
 }
 
+// CreateHistogram registers a new Histogram metric of type *prometheus.HistogramVec and returns it.
+//
+// Example:
+//
+//	h := CreateCounter("crud_operations_total", "Total CRUD operations", []string{"object", "operation"})
+//	h.WithLabelValues("person", "create").Observe(time.Since(start).Seconds())
 func CreateHistogram(name, help string, labels []string, buckets []float64) *prometheus.HistogramVec {
 	factory.mu.Lock()
 	defer factory.mu.Unlock()
@@ -64,8 +84,7 @@ func CreateHistogram(name, help string, labels []string, buckets []float64) *pro
 	if len(buckets) == 0 {
 		buckets = prometheus.DefBuckets
 	}
-	h := prometheus.NewHistogramVec(prometheus.HistogramOpts{Name: name, Help: help, Buckets: buckets}, labels)
-	prometheus.MustRegister(h)
+	h := promauto.NewHistogramVec(prometheus.HistogramOpts{Name: name, Help: help, Buckets: buckets}, labels)
 	factory.histograms[name] = h
 	return h
 }
