@@ -81,7 +81,7 @@ func InstrumentHttpHandler(handlerName string, next http.Handler) http.Handler {
 // }
 
 func handlerLabel(name string) prometheus.Labels {
-	return prometheus.Labels{"handler": name}
+	return prometheus.Labels{"path": name}
 }
 
 // HttpMiddleware is a generic version to wrap muxes or routers easily
