@@ -17,10 +17,21 @@ import (
 )
 
 var (
-	AppUptime   = CreateGauge("app_uptime_seconds", "App uptime in seconds", nil)
-	MemoryAlloc = CreateGauge("app_memory_alloc_bytes", "Memory allocated in bytes", nil)
-	Goroutines  = CreateGauge("app_goroutines", "Current goroutines", nil)
-	GCCount     = CreateCounter("app_gc_total", "Total garbage collections", nil)
+	// AppUptime keep track of  the Total duration of Application is being up
+	// Metric type: GaugeVec
+	AppUptime = CreateGauge("app_uptime_seconds", "App uptime in seconds", nil)
+
+	// Mmory allocated by the app in bytes
+	// Metric type: GaugeVec
+	MemoryAlloc = CreateGauge("app_uptime_seconds", "Memory allocated in bytes", nil)
+
+	// Number of Current goroutines
+	// Metric type: GaugeVec
+	Goroutines = CreateGauge("app_uptime_seconds", "Current goroutines", nil)
+
+	// Number of Total garbage collections
+	// Metric type: CounterVec
+	GCCount = CreateCounter("app_app_uptime_secondsc_total", "Total garbage collections", nil)
 )
 var startTime = time.Now()
 
