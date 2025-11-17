@@ -24,9 +24,10 @@ This middleware can be used with any `net/http` or Gin handler. It Automatically
 ### Plug-and-play Health Middleware
 This middleware can be used with any `net/http` or Gin handler. It Automatically exposes:
 - `app_uptime_seconds` - App uptime in seconds.    
-- `app_uptime_seconds` - Memory allocated in bytes.    
-- `app_uptime_seconds` - Current goroutines.   
-- `app_uptime_seconds` - Total garbage collections.    
+- `app_cpu_usage_percent` - CPU usage (percent) of GO process.    
+- `app_allocated_memory` - Memory allocated in bytes.    
+- `app_go_routines` - Number of Current goroutines.   
+- `app_garbage_collections_count` - Total completed garbage collections count.    
 
 ### CRUD Monitoring Functions
 Exposes some utility functions to track crud operation and business object metrics. With these functions, the following metrics can be exposed:
