@@ -4,8 +4,9 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](LICENSE)
 
 # prometric-go
+**_An open source project from [Peek8.io](https://peek8.io/)._** 
 
-A lightweight and configurable **Prometheus instrumentation library** for Go web applications.
+Prometric-go is a lightweight and configurable **Prometheus instrumentation library** for Go web applications.
 
 `prometric-go` makes it easy to add standardized **HTTP**, **health**, and **business-level metrics** to your services — with minimal code and full Prometheus compatibility.
 
@@ -150,3 +151,12 @@ Please have a look at the sample github repo:
 
 ## 📜 License
 - Apache 2.0, see more details at [LICENSE File](./LICENSE).
+
+## Community
+Prometric-go is a [Peek8](https://peek8.io/) open source project.
+Learn about our open source work and portfolio [here](https://peek8.io/#products).
+If you want to collaborate with us or Invest at [Peek8](https://peek8.io/), please [contact us here](https://peek8.io/#contact).
+
+Issues and PRs are most welcome! Whether it's docs, code improvement, or examples — contributions help the community.
+
+Last but not the least, If you like this project and it seems to be helpful to you, please consider giving the repository a ⭐. Your support helps build a better developer-first observability ecosystem.
